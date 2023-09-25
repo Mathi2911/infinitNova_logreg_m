@@ -10,6 +10,7 @@ function Signup() {
     const [lastName, setLastName] = useState("");
     const [address, setAddress] = useState("");
     const [email, setEmail] = useState("");
+    const [role, setRole] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
@@ -48,7 +49,7 @@ function Signup() {
         try {
             const result = await fetch('http://localhost:8080/register', {
                 method: "post",
-                body: JSON.stringify({ firstName, lastName, address, email, password }),
+                body: JSON.stringify({ firstName, lastName, address, email, role, password }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -56,7 +57,7 @@ function Signup() {
 
             if (result.status === 200) {
                 navigate('/login');
-            }  else {
+            } else {
                 setEmailError('Email already exists');
             }
         } catch (error) {
@@ -109,6 +110,14 @@ function Signup() {
                     }}
                     error={Boolean(emailError)}
                     helperText={emailError}
+                />
+                <TextField
+                    sx={{ marginTop: "20px" }}
+                    label="Role"
+                    name="Role"
+                    variant="outlined"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
                 />
                 <TextField
                     sx={{

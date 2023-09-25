@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -9,6 +9,7 @@ function Login() {
     const [passwordError, setPasswordError] = useState("");
     const [loginError, setLoginError] = useState("");
     const navigate = useNavigate();
+   
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -33,17 +34,35 @@ function Login() {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/login', {
-                method: "post",
-                body: JSON.stringify({ email, password }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+            let response = await fetch("http://localhost:8080/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password}),
             });
+      
 
-       
             if (response.status === 200) {
-                navigate('/home');
+                setLoginError("Login Successful.");
+
+                const data = await response.json();
+
+                const userRole = data.role;
+        
+                switch (userRole) {
+                  case "admin":
+                    navigate("/admin");
+                    break;
+                  case "user":
+                    navigate("/dashboard");
+                    break;
+                  case "webdesigner":
+                    navigate("/webdesigner");
+                    break;
+                  default:
+                    setLoginError("Role not defined.");
+                }
             } else if (response.status === 400) {
                 setLoginError("User not found");
             } else if (response.status === 401) {
@@ -99,6 +118,9 @@ function Login() {
                 >
                     Login
                 </Button>
+                <Typography variant="body2" sx={{ marginTop: "10px", textAlign: "center" }}>
+                    New user? <Link to="/signup">Sign up</Link>
+                </Typography>
                 {loginError && (
                     <Typography variant="body2" sx={{ marginTop: "10px", textAlign: "center", color: 'red' }}>
                         {loginError}
